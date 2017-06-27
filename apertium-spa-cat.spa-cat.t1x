@@ -77,6 +77,15 @@
     </def-cat>
 
 
+    <def-cat n="prnpro">   	  	  
+      <cat-item lemma="lo" tags="prn.pro.p3.m.sg"/>
+      <cat-item lemma="lo" tags="prn.pro.p3.f.sg"/>
+      <cat-item lemma="lo" tags="prn.pro.p3.m.pl"/>
+      <cat-item lemma="lo" tags="prn.pro.p3.f.pl"/>
+    </def-cat>
+
+
+
     <def-cat n="verb">
       <cat-item tags="vblex.*"/>
       <cat-item tags="vbser.*"/>
@@ -174,10 +183,6 @@
     <def-cat n="porque">
       <cat-item lemma="porque" tags="cnjadv"/>
     </def-cat>
-    <def-cat n="noobstante">
-      <cat-item lemma="no obstante2" tags="cnjadv"/>
-    </def-cat>
-
     <def-cat n="cnjcoo">
       <cat-item tags="cnjcoo"/>
     </def-cat>
@@ -280,6 +285,30 @@
     </def-cat>
     <def-cat n="sent">
       <cat-item tags="sent"/>
+    </def-cat>
+    
+    <def-cat n="recién">
+		<cat-item lemma="recién" tags="adv" />
+    </def-cat>
+    
+    <def-cat n="divulgado">
+		<cat-item lemma="divulgar" tags="vblex.pp.*" />
+    </def-cat>
+    
+    <def-cat n="recién_participi">
+		<cat-item tags="vblex.pp.*" />
+		<!-- 
+			<cat-item lemma="pintar" tags="vblex.pp.*" />
+			<cat-item lemma="hacer" tags="vblex.pp.*" />
+			<cat-item lemma="estrenar" tags="vblex.pp.*" />
+			<cat-item lemma="comprar" tags="vblex.pp.*" />
+			<cat-item lemma="lavar" tags="vblex.pp.*" />
+			<cat-item lemma="planchar" tags="vblex.pp.*" />
+			<cat-item lemma="prensar" tags="vblex.pp.*" /> 
+			<cat-item lemma="cocinar" tags="vblex.pp.*" /> 
+			<cat-item lemma="preparar" tags="vblex.pp.*" /> 
+			<cat-item lemma="tender" tags="vblex.pp.*" /> 
+		-->
     </def-cat>
 
   </section-def-cats>
@@ -8225,7 +8254,7 @@
 </rule>
 	  
 
- <rule alt="val"> <!-- REGLA: els del servei lingüístic UA volen que tradueixi 'podían y debían' per 'podien i devien' en comptes de 'podien i havien de'-->
+ <rule alt="val_uni val_gva"> <!-- REGLA: els del servei lingüístic UA volen que tradueixi 'podían y debían' per 'podien i devien' en comptes de 'podien i havien de'-->
       <pattern>
 	<pattern-item n="poder"/>
 	<pattern-item n="cnjcoo"/>
@@ -8252,7 +8281,7 @@
       </action>
 </rule>
 	  
-<rule alt="val"> <!-- REGLA: els del servei lingüístic UA volen que tradueixi 'dilluns + de + matí'-->
+<rule alt="val_gva val_uni"> <!-- REGLA: els del servei lingüístic UA volen que tradueixi 'dilluns + de + matí'-->
       <pattern>
 	<pattern-item n="dies"/>
 	<pattern-item n="matitarda"/>
@@ -8302,6 +8331,87 @@
 	  
 
 
+    <rule alt="val_gva"> <!-- pronom + haver + participi concordats: las ha comprado = les ha comprades-->
+      <pattern>
+	<pattern-item n="prnpro"/>
+	<pattern-item n="haber"/>
+	<pattern-item n="pp_nohaber"/>
+      </pattern>
+      <action>
+	    <out>
+	      <lu>
+		<clip pos="1" side="tl" part="whole"/>
+	      </lu>
+	      <b pos="1"/>
+
+	      <lu>
+		<clip pos="2" side="tl" part="whole"/>
+	      </lu>
+
+	      <b pos="2"/>
+	      <lu>
+		<clip pos="3" side="tl" part="lemh"/>
+		<clip pos="3" side="tl" part="a_verb"/>
+		<clip pos="3" side="tl" part="temps"/>
+		<clip pos="1" side="tl" part="gen"/>
+		<clip pos="1" side="tl" part="nbr"/>
+		<clip pos="3" side="tl" part="lemq"/>
+	      </lu>
+	    </out>
+      </action>
+    </rule> 
+    
+    <rule> <!-- REGLA: recién divulgado -> divulgat recentment -->
+		<pattern>
+			<pattern-item n="recién" />
+			<pattern-item n="divulgado" />
+		</pattern>
+		<action>
+			<out>
+				<lu>
+					<clip pos="2" side="tl" part="lemh"/>
+					<clip pos="2" side="tl" part="a_verb"/>
+					<clip pos="2" side="tl" part="temps"/>
+					<clip pos="2" side="tl" part="gen"/>
+					<clip pos="2" side="tl" part="nbr"/>
+					<clip pos="2" side="tl" part="lemq"/>
+				</lu>
+				<b pos="1"/>
+				<lu>
+					<clip pos="1" side="tl" part="lem"/>
+					<clip pos="1" side="tl" part="a_adv"/>
+				</lu>
+			</out>
+		</action>
+	</rule>	
+
+	<rule> <!-- REGLA: recién lavado/comprado/hecho -> acabat de llavar/comprar/fer -->
+		<pattern>
+			<pattern-item n="recién" />
+			<pattern-item n="recién_participi" />
+		</pattern>
+		<action>
+			<out>
+				<lu>
+					<lit v="acabat" />
+					<lit-tag v="adj"/>
+					<clip pos="2" side="tl" part="gen"/>
+					<clip pos="2" side="tl" part="nbr"/>
+				</lu>
+				<b/>
+				<lu>
+					<lit v="de" />
+					<lit-tag v="pr" />
+				</lu>
+				<b pos="1"/>
+				<lu>
+					<clip pos="2" side="tl" part="lemh"/>
+					<lit-tag v="vblex.inf" />
+				</lu>
+			</out>
+		</action>
+	</rule>	
+	
 
 
 
