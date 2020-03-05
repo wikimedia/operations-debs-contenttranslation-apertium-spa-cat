@@ -4,23 +4,22 @@ Priority: optional
 Maintainer: Debian Science Team <debian-science-maintainers@lists.alioth.debian.org>
 Uploaders: Tino Didriksen <tino@didriksen.cc>,
            Kartik Mistry <kartik@debian.org>
-Build-Depends: apertium-cat (>= 2.2.0~r79715),
-               apertium-dev (>= 3.4),
-               apertium-spa (>= 1.1.0~r79716),
-               autotools-dev,
-               debhelper (>= 9),
+Build-Depends: apertium-dev (>= 3.6.0),
+               apertium-lex-tools,
+               cg3-dev,
+               debhelper (>= 9.0),
                dh-autoreconf,
                gawk,
-               pkg-config (>= 0.21),
-               python
-Standards-Version: 3.9.8
-Homepage: http://apertium.org/
-Vcs-Git: https://anonscm.debian.org/cgit/debian-science/packages/apertium-spa-cat.git
-Vcs-Browser: https://anonscm.debian.org/cgit/debian-science/packages/apertium-spa-cat.git
+               pkg-config,
+               python3
+Standards-Version: 4.4.1
+Homepage: https://apertium.org/
+Vcs-Git: https://salsa.debian.org/science-team/apertium-spa-cat.git
+Vcs-Browser: https://salsa.debian.org/science-team/apertium-spa-cat
 
 Package: apertium-spa-cat
 Architecture: all
-Depends: apertium (>= 3.4), ${misc:Depends}, ${shlibs:Depends}
+Depends: apertium (>= 3.6.0), ${misc:Depends}, ${shlibs:Depends}
 Provides: apertium-cat-spa
 Conflicts: apertium-cat-spa
 Replaces: apertium-es-ca (<< 2.0.0~)
@@ -32,7 +31,6 @@ Description: Apertium translation data for the Spanish-Catalan pair
 Package: apertium-es-ca
 Architecture: all
 Depends: apertium-spa-cat (= ${binary:Version}), ${misc:Depends}
-Priority: extra
 Section: oldlibs
 Provides: apertium-ca-es
 Description: Transitional dummy package for apertium-spa-cat

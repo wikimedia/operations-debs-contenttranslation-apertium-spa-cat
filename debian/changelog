@@ -1,10 +1,16 @@
+apertium-spa-cat (2.2.0-1+wmf1) jessie-wikimedia; urgency=low
+
+  * New upstream release.
+  * Removed -cat/-spa versioned dependencies.
+
+ -- Kartik Mistry <kartik@debian.org>  Tue, 10 Mar 2020 12:16:59 +0530
+
 apertium-spa-cat (2.1.0~r79717-1) jessie-wikimedia; urgency=low
 
   * Update to latest upstream release.
   * debian/control:
     + Build-Depends on python now.
     + Updated apertium-cat/apertium-spa versioned dependencies.
-
 
  -- Kartik Mistry <kartik@debian.org>  Tue, 27 Jun 2017 16:58:15 +0530
 
