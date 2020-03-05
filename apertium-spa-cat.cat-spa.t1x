@@ -14,16 +14,22 @@
     <def-cat n="descbil">
       <cat-item lemma="@*" tags="n.*"/>
     </def-cat> -->
+
+    <def-cat n="np">
+      <cat-item tags="np.*"/>
+    </def-cat>
     <def-cat n="npant">
       <cat-item tags="np.ant"/>
+      <cat-item tags="np.ant.*"/>
     </def-cat>
-
     <def-cat n="nploc">
       <cat-item tags="np.loc"/>
+      <cat-item tags="np.top.*"/>
     </def-cat>    
     <def-cat n="nom_loc">
       <cat-item tags="n.*"/>
       <cat-item tags="np.loc"/>
+      <cat-item tags="np.top.*"/>
     </def-cat>    
 
     <def-cat n="det">          
@@ -220,6 +226,11 @@
       <cat-item lemma="no" tags="adv"/>
     </def-cat>
 
+    <def-cat n="ant">
+      <cat-item tags="np.ant.*"/>
+      <cat-item tags="np.cog.*"/>
+    </def-cat>
+
     <def-cat n="sent">
       <cat-item tags="sent"/>
     </def-cat>
@@ -232,14 +243,17 @@
       <attr-item tags="n"/>
       <attr-item tags="n.acr"/>
       <attr-item tags="np.loc"/>
+      <attr-item tags="np.top"/>
     </def-attr>
 
     <def-attr n="a_npant">
       <attr-item tags="np.ant"/>
+      <attr-item tags="np.cog"/>
     </def-attr>
 
     <def-attr n="a_nploc">
       <attr-item tags="np.loc"/>
+      <attr-item tags="np.top"/>
     </def-attr>        
 
     <def-attr n="a_det">          
@@ -263,6 +277,7 @@
       <attr-item tags="adj.sup"/>
       <attr-item tags="adj.itg"/>
       <attr-item tags="adj.pos"/>
+      <attr-item tags="adj.ord"/>
       <attr-item tags="adj"/>
       <attr-item tags="vblex.pp"/>
       <attr-item tags="vblex.v2.pp"/>
@@ -273,6 +288,7 @@
       <attr-item tags="adj.sup"/>
       <attr-item tags="adj.itg"/>
       <attr-item tags="adj.pos"/>
+      <attr-item tags="adj.ord"/>
       <attr-item tags="adj"/>
       <attr-item tags="vblex.pp"/>
       <attr-item tags="vblex.v2.pp"/>
@@ -450,30 +466,34 @@
       <list-item v="empresa"/>
     </def-list>
     <def-list n="verbs_moviment">
+      <list-item v="acostar"/>
       <list-item v="anar"/>
-      <list-item v="traslladar"/>
-      <list-item v="viatjar"/>
-      <list-item v="emigrar"/>
-      <list-item v="inmigrar"/>
-      <list-item v="moure"/>
-      <list-item v="venir"/>
-      <list-item v="vindre"/>
-      <list-item v="eixir"/>
-      <list-item v="sortir"/>
-      <list-item v="entrar"/>
-      <list-item v="pujar"/>
+      <list-item v="apropar"/>
+      <list-item v="arribar"/>
       <list-item v="baixar"/>
       <list-item v="caminar"/>
-      <list-item v="dirigir"/>
-      <list-item v="apropar"/>
       <list-item v="córrer"/>
-      <list-item v="portar"/>
-      <list-item v="tornar"/>
-      <list-item v="regressar"/>
-      <list-item v="arribar"/>
-      <list-item v="marxar"/>
+      <list-item v="dirigir"/>
+      <list-item v="eixir"/>
+      <list-item v="emigrar"/>
+      <list-item v="entrar"/>
       <list-item v="enviar"/>
       <list-item v="fer #costat"/>
+      <list-item v="inmigrar"/>
+      <list-item v="marxar"/>
+      <list-item v="moure"/>
+      <list-item v="portar"/>
+      <list-item v="pujar"/>
+      <list-item v="regressar"/>
+      <list-item v="remetre"/>
+      <list-item v="sortir"/>
+      <list-item v="tornar"/>
+      <list-item v="trametre"/>
+      <list-item v="transmetre"/>
+      <list-item v="traslladar"/>
+      <list-item v="venir"/>
+      <list-item v="viatjar"/>
+      <list-item v="vindre"/>
     </def-list>
     
     <def-list n="verbs_estat">
@@ -1486,6 +1506,28 @@
 	    <lit-tag v="pl"/>
 	  </let>
 	</when>
+
+        <when>
+          <test>
+            <and>
+            <equal>
+              <clip pos="2" side="tl" part="a_num"/>
+              <lit-tag v="num"/>
+            </equal>
+            <not>
+            <equal>
+              <clip pos="2" side="tl" part="lem"/>
+              <lit v="1"/>
+            </equal>
+            </not>
+            </and>
+          </test>
+          <let>
+            <var n="numero"/>
+            <lit-tag v="pl"/>
+          </let>
+        </when>
+
 	<when>
 	  <test>
 	    <and>
@@ -3321,6 +3363,24 @@
       </action>
     </rule>
 
+    <rule> <!-- REGLA: NP -->
+      <pattern>
+	<pattern-item n="np"/>
+      </pattern>
+      <action>	
+	<call-macro n="f_concord1">
+	  <with-param pos="1"/>
+	</call-macro>     
+	<out> 
+	  <lu>
+	    <clip pos="1" side="tl" part="lemh"/>
+	    <clip pos="1" side="tl" part="tags"/>
+	    <clip pos="1" side="tl" part="lemq"/> 
+	  </lu>
+	</out>
+      </action>
+    </rule>
+
     <rule> <!-- REGLA: ADJECTIU -->
       <pattern>
 	<pattern-item n="adj"/>
@@ -3383,6 +3443,31 @@
       </action>
     </rule>
 
+    <rule> <!-- REGLA: DET + nploc-->
+      <pattern>
+	<pattern-item n="det"/>
+	<pattern-item n="nploc"/>
+      </pattern>
+      <action>
+	<call-macro n="f_concord2">
+	  <with-param pos="2"/>
+	  <with-param pos="1"/>
+	</call-macro> 
+	    <out>   
+	      <lu>
+		<clip pos="1" side="tl" part="lemh"/>
+		<clip pos="1" side="tl" part="tags"/>
+		<clip pos="1" side="tl" part="lemq"/> 
+	      </lu>
+	      <b pos="1"/>
+	      <lu>
+		<clip pos="2" side="tl" part="lemh"/>
+		<clip pos="2" side="tl" part="tags"/>
+		<clip pos="2" side="tl" part="lemq"/>
+	      </lu>	    
+	    </out>
+      </action>
+    </rule>
 
 
     <rule> <!-- REGLA: DETERMINANT NOM -->
@@ -4756,7 +4841,8 @@
       </action>
     </rule>
     
-    <rule> <!-- REGLA: PREP NOM-->
+    <!-- REGLA: PREP NOM-->
+    <!--<rule> 
       <pattern>
 	<pattern-item n="prep"/>
 	<pattern-item n="nom"/>
@@ -4779,7 +4865,7 @@
 	  </lu>
 	</out>
       </action>
-    </rule>
+    </rule>-->
     
     <rule> <!-- REGLA: PREP ADJECTIU -->
       <pattern>
@@ -6720,7 +6806,7 @@
       </action>
     </rule>
 
-    <rule> <!--REGLA: PER + adv + infinitiu = per no trobar -> para no encontrar-->
+    <!--<rule> REGLA: PER + adv + infinitiu = per no trobar -> para no encontrar
       <pattern>
 	<pattern-item n="per"/>
 	<pattern-item n="adv"/>
@@ -6755,7 +6841,7 @@
     </rule> 
 
 
-    <rule> <!--REGLA: PER + adv + infinitiu + enclític= per no trobar-se -> para no encontrarse-->
+    <rule> REGLA: PER + adv + infinitiu + enclític= per no trobar-se -> para no encontrarse
       <pattern>
 	<pattern-item n="per"/>
 	<pattern-item n="adv"/>
@@ -6789,7 +6875,7 @@
       </action>
     </rule>
 
-    <rule> <!--REGLA: PER + adv + infinitiu + enclític + enclític = per no explicar-los-ho -> para no explicárselo-->
+    <rule> REGLA: PER + adv + infinitiu + enclític + enclític = per no explicar-los-ho -> para no explicárselo
       <pattern>
 	<pattern-item n="per"/>
 	<pattern-item n="adv"/>
@@ -6823,11 +6909,11 @@
 	  <with-param pos="5"/>
 	</call-macro>	 
       </action>
-    </rule>
+    </rule> -->
 
 
 
-    <rule> <!--REGLA: a + nploc = a Barcelona -> en Barcelona-->
+    <!--<rule> REGLA: a + nploc = a Barcelona -> en Barcelona
       <pattern>
 	<pattern-item n="a"/>
 	<pattern-item n="nploc"/>
@@ -6843,11 +6929,11 @@
 	  <b pos="1"/>
 	  <lu>
 	    <clip pos="2" side="tl" part="lem"/>
-	    <clip pos="2" side="tl" part="a_nploc"/> 
+	    <clip pos="2" side="tl" part="tags"/> 
 	  </lu>
 	</out>   
       </action>
-    </rule> 
+    </rule> -->
 
 
     <rule> <!--REGLA NOVA 6: a + DET + nploc = al Segrià -> en el Segrià "mireiafarrus"-->
@@ -6857,6 +6943,10 @@
 	<pattern-item n="nploc"/>
       </pattern>
       <action>	
+	<call-macro n="f_concord2">
+	  <with-param pos="3"/>
+	  <with-param pos="2"/>
+	</call-macro>     
 	<choose>
 	  <when>
 	    <test>
@@ -6885,7 +6975,7 @@
 	  <b pos="2"/>
 	  <lu>
 	    <clip pos="3" side="tl" part="lem"/>
-	    <clip pos="3" side="tl" part="a_nploc"/> 
+	    <clip pos="3" side="tl" part="tags"/> 
 	  </lu>
 	</out>   
       </action>
@@ -7001,6 +7091,10 @@
 		<equal>
 		  <clip pos="3" side="sl" part="a_nploc"/>
 		  <lit-tag v="np.loc"/>
+		</equal>
+		<equal>
+		  <clip pos="3" side="sl" part="a_nploc"/>
+		  <lit-tag v="np.top"/>
 		</equal>
 	      </or>
 	    </test>
@@ -7168,6 +7262,10 @@
 		<equal>
 		  <clip pos="4" side="sl" part="a_nploc"/>
 		  <lit-tag v="np.loc"/>
+		</equal>
+		<equal>
+		  <clip pos="4" side="sl" part="a_nploc"/>
+		  <lit-tag v="np.top"/>
 		</equal>
 	      </or>
 	    </test>
@@ -7365,6 +7463,10 @@
 		  <clip pos="4" side="sl" part="a_nploc"/>
 		  <lit-tag v="np.loc"/>
 		</equal>
+		<equal>
+		  <clip pos="4" side="sl" part="a_nploc"/>
+		  <lit-tag v="np.top"/>
+		</equal>
 	      </or>
 	    </test>
 	    <choose>
@@ -7552,6 +7654,10 @@
 		<equal>
 		  <clip pos="5" side="sl" part="a_nploc"/>
 		  <lit-tag v="np.loc"/>
+		</equal>
+		<equal>
+		  <clip pos="5" side="sl" part="a_nploc"/>
+		  <lit-tag v="np.top"/>
 		</equal>
 	      </or>
 	    </test>
@@ -8147,6 +8253,36 @@
       </action>
     </rule>
 
+    <rule> <!--REGLA: conserva "i" en noms: Pere Mas i Garcia -->
+      <pattern>
+  <pattern-item n="ant"/>
+  <pattern-item n="ant"/>
+  <pattern-item n="i"/>
+  <pattern-item n="ant"/>
+      </pattern>
+      <action>
+  <out>
+    <lu>
+       <clip pos="1" side="tl" part="whole"/>
+    </lu>
+    <b/>
+    <lu>
+       <clip pos="2" side="tl" part="whole"/>
+    </lu>
+    <b/>
+    <lu>
+       <lit v="i" /> <!-- la "i" en castellà, com a nom de lletra -->
+       <lit-tag v="n" />
+       <lit-tag v="f" />
+       <lit-tag v="sp" />
+    </lu>
+    <b/>
+    <lu>
+       <clip pos="4" side="tl" part="whole"/>
+    </lu>
+  </out>
+      </action>
+    </rule>
 
 
     <rule> <!-- REGLA: reset variables-->
