@@ -2,7 +2,6 @@
 ## Makefile for Spanish--Catalan
 ###############################################################################
 
-VERSION=2.1.0
 LANG1=spa
 LANG2=cat
 
@@ -28,7 +27,6 @@ BASENAME=apertium-$(PREFIX1)
 
 TARGETS_COMMON =			\
 	$(PREFIX1).automorf.bin 	\
-	$(LANG1).lrx.bin		\
 	$(PREFIX1).rlx.bin	\
 	$(PREFIX2).rlx.bin	\
 	$(PREFIX1).prob		 	\
@@ -39,19 +37,22 @@ TARGETS_COMMON =			\
 	$(PREFIX1C).autogen.bin 	\
 	$(PREFIX1V).autogen.bin 	\
 	$(PREFIX1U).autogen.bin 	\
+	$(PREFIX1C).autopgen-diacritics-vells.bin 	\
+	$(PREFIX1C).autopgen-diacritics-nous.bin 	\
 	$(PREFIX1C).autopgen.bin 	\
 	$(PREFIX1V).autopgen.bin 	\
 	$(PREFIX1U).autopgen.bin 	\
 	$(PREFIX2).automorf.bin		\
 	$(PREFIX2).prob			\
 	$(PREFIX2).autobil.bin		\
+	$(PREFIX2).autolex.bin  \
 	$(PREFIX2).autogen.bin 		\
 	$(PREFIX2).autopgen.bin 	\
 	$(PREFIX1C).t1x.bin 		\
 	$(PREFIX1V).t1x.bin 		\
 	$(PREFIX1U).t1x.bin 		\
 	$(PREFIX2).t1x.bin
-	
+
 
 # This include defines goals for install-modes, .deps/.d, autobil.prefixes and .mode files:
 @ap_include@
@@ -83,7 +84,7 @@ $(PREFIX2).autogen.bin: $(AP_SRC1)/$(LANG1).autogen.bin
 
 $(PREFIX2).autopgen.bin: $(AP_SRC1)/$(LANG1).autopgen.bin
 	cp $< $@
-	
+
 # -------------------
 # Catalan analysis:
 # -------------------
@@ -94,6 +95,12 @@ $(PREFIX2).automorf.bin: $(AP_SRC2)/$(LANG2).automorf.bin $(PREFIX2).autobil.bin
 # -------------------
 # Catalan generation:
 # ---------------------
+
+$(PREFIX1C).autopgen-diacritics-vells.bin: $(AP_SRC2)/$(LANG2C).autopgen-diacritics-vells.bin
+	cp $< $@
+
+$(PREFIX1C).autopgen-diacritics-nous.bin: $(AP_SRC2)/$(LANG2C).autopgen-diacritics-nous.bin
+	cp $< $@
 
 $(PREFIX1C).autogen.bin: $(AP_SRC2)/$(LANG2C).autogen.bin
 	cp $< $@
@@ -120,16 +127,13 @@ $(PREFIX1U).autopgen.bin: $(AP_SRC2)/$(LANG2U).autopgen.bin
 
 $(PREFIX1).prob: $(AP_SRC1)/$(LANG1).prob
 	cp $< $@
-	
+
 $(PREFIX1).rlx.bin: $(AP_SRC1)/apertium-$(LANG1).$(LANG1).rlx
 	cg-comp $< $@
 
-$(LANG1).lrx.bin: $(AP_SRC1)/$(LANG1).lrx.bin
-	cp $< $@
-
 $(PREFIX2).prob: $(AP_SRC2)/$(LANG2).prob
 	cp $< $@
-	
+
 $(PREFIX2).rlx.bin: $(AP_SRC2)/apertium-$(LANG2).$(LANG2).rlx
 	cg-comp $< $@
 
@@ -139,17 +143,17 @@ $(PREFIX2).rlx.bin: $(AP_SRC2)/apertium-$(LANG2).$(LANG2).rlx
 ###############################################################################
 
 .deps/$(PREFIX1).dix: $(BASENAME).$(PREFIX1).dix .deps/.d
-	xsltproc translate-to-default-equivalent.xsl $< > $@
+	apertium-translate-to-default-equivalent $< $@
 
 .deps/$(PREFIX1).cat.dix: .deps/$(PREFIX1).dix
-	python genvrdix.py cat $< >$@
+	apertium-genvrdix cat $< >$@
 
 .deps/$(PREFIX1).val_gva.dix: .deps/$(PREFIX1).dix
-	python genvrdix.py val_gva $< >$@
+	apertium-genvrdix val_gva $< >$@
 
 .deps/$(PREFIX1).val_uni.dix: .deps/$(PREFIX1).dix
-	python genvrdix.py val_uni $< >$@
-	
+	apertium-genvrdix val_uni $< >$@
+
 $(PREFIX1C).autobil.bin: .deps/$(PREFIX1).cat.dix
 	apertium-validate-dictionary $<
 	lt-comp --var-right=cat lr $< $@
@@ -170,11 +174,17 @@ $(PREFIX2).autobil.bin: $(BASENAME).$(PREFIX1).dix
 ## Lexical selection rules
 ###############################################################################
 
-$(PREFIX1).autolex.bin: $(BASENAME).$(PREFIX1).lrx
+.deps/%.metalrx: %.metalrx
+	apertium-metalrx $< $@
+
+.deps/%.lrx: .deps/%.metalrx
+	apertium-metalrx-to-lrx $< $@
+
+$(PREFIX1).autolex.bin: .deps/$(BASENAME).$(PREFIX1).lrx
 	lrx-comp $< $@
 
-# $(PREFIX2).autolex.bin: $(BASENAME).$(PREFIX2).lrx
-# 	lrx-comp $< $@
+$(PREFIX2).autolex.bin: .deps/$(BASENAME).$(PREFIX2).lrx
+	lrx-comp $< $@
 
 
 ###############################################################################
@@ -194,13 +204,13 @@ $(PREFIX1U).t1x.bin: $(PREFIX1U).t1x
 	apertium-preprocess-transfer $< $@
 
 .deps/$(BASENAME).$(PREFIX1).cat.t1x: $(BASENAME).$(PREFIX1).t1x
-	python gent1x.py cat $< >$@
+	python3 gent1x.py cat $< >$@
 
 .deps/$(BASENAME).$(PREFIX1).val_gva.t1x: $(BASENAME).$(PREFIX1).t1x
-	python gent1x.py val_gva $< >$@
+	python3 gent1x.py val_gva $< >$@
 
 .deps/$(BASENAME).$(PREFIX1).val_uni.t1x: $(BASENAME).$(PREFIX1).t1x
-	python gent1x.py val_uni $< >$@
+	python3 gent1x.py val_uni $< >$@
 
 $(PREFIX1C).t1x: .deps/$(BASENAME).$(PREFIX1).cat.t1x
 	xsltproc --stringparam alt cat alt.xsl $< >$@
@@ -219,19 +229,16 @@ $(PREFIX2).t1x.bin: $(BASENAME).$(PREFIX2).t1x
 ## Distribution
 ###############################################################################
 
-EXTRA_DIST=								\
-		$(BASENAME).$(PREFIX1).lrx      \
-		$(BASENAME).$(PREFIX2).lrx      \
-		$(BASENAME).$(PREFIX1).dix 		\
-		$(BASENAME).$(PREFIX1).dix 		\
-		$(BASENAME).$(PREFIX1).t1x 		\
-		$(BASENAME).$(PREFIX1C).t1x 	\
-		$(BASENAME).$(PREFIX1V).t1x 	\
-		$(BASENAME).$(PREFIX1U).t1x 	\
-		$(BASENAME).$(PREFIX2).t1x 		\
-		$(BASENAME).$(LANG1).acx 		\
-		$(BASENAME).$(LANG2).acx 		\
-		modes.xml 						\
+EXTRA_DIST=									\
+		.deps/$(BASENAME).$(PREFIX1).lrx	\
+		.deps/$(BASENAME).$(PREFIX2).lrx	\
+		$(BASENAME).$(PREFIX1).dix 			\
+		$(BASENAME).$(PREFIX1).dix 			\
+		$(PREFIX1C).t1x 	\
+		$(PREFIX1V).t1x 	\
+		$(PREFIX1U).t1x 	\
+		$(BASENAME).$(PREFIX2).t1x 			\
+		modes.xml 							\
 		alt.xsl
 
 
@@ -244,16 +251,10 @@ apertium_spa_catdir=$(prefix)/share/apertium/$(BASENAME)/
 # Files which should be installed to $(prefix)/share/apertium/$(BASENAME)/:
 apertium_spa_cat_DATA=				\
 	$(TARGETS_COMMON)				\
-	$(BASENAME).$(PREFIX1).t1x		\
-	$(PREFIX1C).t1x					\
-	$(PREFIX1V).t1x					\
-	$(PREFIX1U).t1x					\
-	$(BASENAME).$(PREFIX2).t1x		
-
-modes/$(PREFIX1).mode: modes.xml
-	apertium-validate-modes modes.xml
-	apertium-gen-modes modes.xml
-	cp *.mode modes/
+	$(PREFIX1C).t1x			\
+	$(PREFIX1V).t1x			\
+	$(PREFIX1U).t1x			\
+	$(BASENAME).$(PREFIX2).t1x
 
 # All modes are created by the same goal, listing several will just give problems with make -j2
 noinst_DATA=modes/$(PREFIX1).mode
@@ -268,3 +269,17 @@ install-data-local: install-modes
 CLEANFILES = $(TARGETS_COMMON)
 clean-local:
 	-rm -rf .deps modes
+
+
+###############################################################################
+## Test
+###############################################################################
+
+test: all
+	echo "pero" | apertium -d . spa-cat | tee .test-mt
+	@echo "però" > .test-ref
+	@diff .test-ref .test-mt
+	echo "però" | apertium -d . cat-spa | tee .test-mt
+	@echo "pero" > .test-ref
+	@diff .test-ref .test-mt
+	@rm .test-ref .test-mt
